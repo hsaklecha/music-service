@@ -1,15 +1,21 @@
 package com.itorizon.music.service;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Stack;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.itorizon.music.trie.Trie;
-import com.itorizon.music.trie.TrieGenerator;
-import com.itorizon.music.trie.TrieNode;
+import com.itorizon.music.config.PropertyUtil;
+import com.itorizon.music.domain.MusicData;
+import com.itorizon.music.service.FileParser;
 
 /**
  * Service class
@@ -21,37 +27,37 @@ import com.itorizon.music.trie.TrieNode;
 public class MusicService {
 
   @Autowired
-  private TrieGenerator trieGenerator;
+  private FileParser fileParser;
 
-  private Trie trie;
+  @Autowired
+  private PropertyUtil propertyUtil;
 
   // Returns if there is any word in the trie
   // that starts with the given prefix.
-  public List<String> search(String query) {
-    if (trie == null) {
-      trie = trieGenerator.createTrie();
+  public Set<String> search(String query) {
+    Integer threadPoolSize = propertyUtil.getThreadPoolSize();
+    ExecutorService executorService = Executors.newFixedThreadPool(threadPoolSize);
+    Collection<Future<Set<String>>> futures = new ArrayList<Future<Set<String>>>();
+    Set<String> resultSet = new HashSet<String>();
+    for (List<MusicData> list : fileParser.readFile(threadPoolSize)) {
+      futures.add(executorService.submit(new SearchHandler(list, query)));
     }
 
-    List<String> resultList = new ArrayList<>();
+    for (Future<?> future : futures) {
+      Set<String> s;
+      try {
+        resultSet.addAll((Set<String>) future.get());
 
-    TrieNode node = trie.searchNode(query);
-    Stack<TrieNode> stack = new Stack<>();
-    stack.push(node);
-
-    while (!stack.isEmpty()) {
-      TrieNode curr = stack.pop();
-
-      if (curr != null) {
-        if (!curr.getIds().isEmpty())
-          resultList.addAll(curr.getIds());
-
-        for (Character c : curr.getChildren().keySet()) {
-          stack.push(curr.getChildren().get(c));
-        }
+      }
+      catch (InterruptedException | ExecutionException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
       }
 
     }
-    return resultList;
+
+    return resultSet;
+
   }
 
 }

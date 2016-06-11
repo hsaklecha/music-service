@@ -1,10 +1,11 @@
-package com.itorizon.music.trie;
+package com.itorizon.music.service;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
@@ -12,19 +13,23 @@ import org.springframework.stereotype.Component;
 import com.itorizon.music.domain.MusicData;
 
 @Component
-public class TrieGenerator {
+class FileParser {
 
   /**
    * Method to parse musical_group.tsv and create a trie for the music data.
    * 
    * @return The root node of that trie.
    */
-  public Trie createTrie() {
+  public List<List<MusicData>> readFile(Integer threadPoolSize) {
 
-    Trie trie = new Trie();
+    // initializing list as per threadpoolsize
+    List<List<MusicData>> dataList = new ArrayList<>();
+    for (int i = 0; i < threadPoolSize; i++) {
+      dataList.add(new ArrayList<MusicData>());
+    }
+
     String line;
     BufferedReader br = null;
-    FileReader fr = null;
     InputStreamReader ir = null;
     FileInputStream fis = null;
     try {
@@ -34,10 +39,12 @@ public class TrieGenerator {
       br = new BufferedReader(ir);
       br.readLine(); // ignore first line
 
+      int idx = 0;
       String[] tokens;
       while ((line = br.readLine()) != null) {
         tokens = line.split("/m/");
-        trie.addToTrie(new MusicData(tokens[0].trim(), tokens[1]));
+        dataList.get(idx % threadPoolSize).add(new MusicData(tokens[0].trim(), tokens[1]));
+        idx++;
       }
 
     }
@@ -53,15 +60,22 @@ public class TrieGenerator {
         // do nothing
       }
       try {
-        if (fr != null)
-          fr.close();
+        if (ir != null)
+          ir.close();
+      }
+      catch (IOException ex) {
+        // do nothing
+      }
+      try {
+        if (fis != null)
+          fis.close();
       }
       catch (IOException ex) {
         // do nothing
       }
     }
 
-    return trie;
+    return dataList;
   }
 
 }

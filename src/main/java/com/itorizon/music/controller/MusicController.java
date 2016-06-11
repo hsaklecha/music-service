@@ -1,6 +1,6 @@
 package com.itorizon.music.controller;
 
-import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +24,7 @@ public class MusicController {
   private MusicService musicService;
 
   @RequestMapping(method = RequestMethod.GET, value = "/search")
-  public List<String> search(@RequestParam(name = "query") String query) {
+  public Set<String> search(@RequestParam(name = "query") String query) {
     return musicService.search(query);
   }
 }

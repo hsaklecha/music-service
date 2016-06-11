@@ -1,8 +1,8 @@
 package com.itorizon.music.trie;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -14,7 +14,7 @@ import java.util.TreeMap;
  */
 public class TrieNode {
   private Map<Character, TrieNode> children;
-  private List<String> ids;
+  private Set<String> ids;
   private Character unicode;
 
   public TrieNode() {
@@ -26,7 +26,7 @@ public class TrieNode {
     children = new TreeMap<>((char1, char2) -> {
       return char1 - char2;
     });
-    ids = new ArrayList<>();
+    ids = new HashSet<>();
   }
 
   public Map<Character, TrieNode> getChildren() {
@@ -37,11 +37,11 @@ public class TrieNode {
     this.children = children;
   }
 
-  public List<String> getIds() {
+  public Set<String> getIds() {
     return ids;
   }
 
-  public void setIds(List<String> ids) {
+  public void setIds(Set<String> ids) {
     this.ids = ids;
   }
 
