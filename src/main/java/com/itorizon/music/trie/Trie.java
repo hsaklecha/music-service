@@ -1,8 +1,11 @@
 package com.itorizon.music.trie;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
@@ -26,13 +29,15 @@ public class Trie {
    */
   public void addToTrie(MusicData data) {
     String[] tokens = data.getName().split(" ");
+    String[] words = Arrays.copyOf(tokens, tokens.length + 1);
+    words[words.length - 1] = data.getName();
 
-    for (int y = 0; y < tokens.length; y++) {
+    for (int y = 0; y < words.length; y++) {
 
       Map<Character, TrieNode> children = root.getChildren();
 
-      for (int i = 0; i < tokens[y].length(); i++) {
-        char c = tokens[y].charAt(i);
+      for (int i = 0; i < words[y].length(); i++) {
+        char c = words[y].charAt(i);
 
         TrieNode newNode;
 
@@ -46,7 +51,7 @@ public class Trie {
 
         children = newNode.getChildren();
 
-        if (i == (tokens[y].length() - 1))
+        if (i == (words[y].length() - 1))
           newNode.getIds().add(data.getId());
       }
     }
