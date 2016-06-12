@@ -9,7 +9,7 @@ For searching of album a REST endpoint is provided, to search for album having I
 ```sh
 localhost:8080/music/search?query=Indigo
 ```
-This project has gradlew.bat file which helps in building project and running application
+This project has gradlew.bat file which helps in building project and running application.
 For building application first time
 ```sh
 path\music-service> gradlew build
