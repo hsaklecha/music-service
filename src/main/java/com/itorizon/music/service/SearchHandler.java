@@ -7,7 +7,12 @@ import java.util.concurrent.Callable;
 import com.itorizon.music.domain.MusicData;
 import com.itorizon.music.trie.Trie;
 
-public class SearchHandler implements Callable<Set<String>> {
+/**
+ * Search handler class which will pass list to create its trie.
+ * 
+ * @author H. Saklecha
+ */
+class SearchHandler implements Callable<Set<String>> {
 
   private List<MusicData> dataList;
   private String query;
@@ -20,7 +25,8 @@ public class SearchHandler implements Callable<Set<String>> {
 
   @Override
   public Set<String> call() throws Exception {
-    System.out.println("tree: " + trie);
+
+    // lazily loaded
     if (trie == null) {
       trie = new Trie();
     }

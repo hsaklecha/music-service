@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import com.itorizon.music.config.PropertyUtil;
 import com.itorizon.music.domain.MusicData;
-import com.itorizon.music.service.FileParser;
 
 /**
  * Service class
@@ -24,7 +23,7 @@ import com.itorizon.music.service.FileParser;
  * 
  */
 @Service
-public class MusicService {
+public class MusicService implements SearchService {
 
   @Autowired
   private FileParser fileParser;
@@ -32,31 +31,36 @@ public class MusicService {
   @Autowired
   private PropertyUtil propertyUtil;
 
-  // Returns if there is any word in the trie
-  // that starts with the given prefix.
-  public Set<String> search(String query) {
+  /**
+   * Method to search the given query and return corresponding id's.
+   * 
+   * @return The root node of that trie.
+   */
+  public List<String> search(String query) {
+
+    List<String> resultList = new ArrayList<>();
     Integer threadPoolSize = propertyUtil.getThreadPoolSize();
     ExecutorService executorService = Executors.newFixedThreadPool(threadPoolSize);
-    Collection<Future<Set<String>>> futures = new ArrayList<Future<Set<String>>>();
-    Set<String> resultSet = new HashSet<String>();
+
+    Collection<Future<Set<String>>> futures = new ArrayList<>(threadPoolSize);
+    Set<String> resultSet = new HashSet<>();
+
     for (List<MusicData> list : fileParser.readFile(threadPoolSize)) {
       futures.add(executorService.submit(new SearchHandler(list, query)));
     }
 
-    for (Future<?> future : futures) {
-      Set<String> s;
+    for (Future<Set<String>> future : futures) {
       try {
-        resultSet.addAll((Set<String>) future.get());
-
+        resultSet.addAll(future.get());
       }
       catch (InterruptedException | ExecutionException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
       }
 
     }
+    resultList.addAll(resultSet);
 
-    return resultSet;
+    return resultList;
 
   }
 

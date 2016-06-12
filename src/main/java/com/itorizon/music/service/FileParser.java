@@ -12,6 +12,11 @@ import org.springframework.stereotype.Component;
 
 import com.itorizon.music.domain.MusicData;
 
+/**
+ * File parser class to read file and generate trie.
+ *
+ * @author H. Saklecha
+ */
 @Component
 class FileParser {
 

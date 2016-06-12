@@ -1,4 +1,4 @@
-package com.itorizon.music.service;
+package com.itorizon.music.trie;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,7 @@ public class TestObjects {
     musicData1 = new MusicData("Harsh Khandelwal", "1xta");
     dataList.add(musicData1);
 
-    musicData2 = new MusicData("Harish Mandale", "2xta");
+    musicData2 = new MusicData("Harish Roshan", "2xta");
     dataList.add(musicData2);
 
     musicData3 = new MusicData("Roger Binny", "3xta");
